@@ -2,6 +2,7 @@ package io.github.ronycce445.pennywise.exception;
 
 
 import io.github.ronycce445.pennywise.dto.ApiErrorResponse;
+import io.github.ronycce445.pennywise.exception.TransactionNotFoundException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,5 +35,17 @@ public class GlobalExceptionHandler {
         response.setDetails(errors);
 
         return ResponseEntity.badRequest().body(response);
+    }
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleTransactionNotFound(
+            TransactionNotFoundException ex) {
+
+        ApiErrorResponse response = new ApiErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
+        response.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
